@@ -1,19 +1,13 @@
 var http = require('http');
+var fs = require('fs');
 
-var ipurl = ('whatismyip.com');
-var i = http.createClient(80, ipurl);
-
-var ip = i.request('GET', ipurl, {'host':'whatismyip.com'});
-console.log(ip);
-ip.end();
-
-ip.addListener('response', function (response) {
-var body = '';
-
-response.addListener('data', function(chunk) {
-	body += chunk;
+	var client = http.createClient(80, 'whatismyip.org');
+	var request = client.request('GET', '/', {'host': 'www.whatismyip.org'});
+	request.end();
+	out = fs.createWriteStream('out');
+	request.on('response', function (response) {
+		response.setEncoding('utf8');
+		response.on('data', function (chunk) {
+			out.write(chunk);
+		});
 	});
-
-//console.log(response);
-//console.log(body);
-});
