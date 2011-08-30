@@ -8,14 +8,28 @@ var subdomain = "";
 var password = "";
 var api = "api.slicehost.com";
 
-// get the requesting IP from mirmillo.com
-var options = {
+
+// http get_ip options
+var httpopt = {
 	host: 'mirmillo.com',
 	port: 80,
 	path: '/ip.php'
 };
 
-request = http.get(options, function(res){
+
+// https api options
+var httpsopt = {
+	host: api,
+	port: 443,
+	path: '/api.xml',
+	headers: {
+	//'Authorization': 'Basic ' + new Buffer(uname + ':' + pword).toString('base64')
+	'Authorization': 'Basic ' + new Buffer(password).toString('base64')
+	}         
+};
+
+// get the ip from mirmillo.com
+request = http.get(httpopt, function(res){
 	var body = "";
 	res.on('data', function(data) {
 		body += data;
@@ -23,7 +37,9 @@ request = http.get(options, function(res){
 	res.on('end', function() {
 		body = util.trim(body);
 		console.log("response "+body);
-		get_api(body);
+		//get_api(body);
+		send_ip(body);
+		//get_slices(body);
 	})
 	res.on('error', function(e) {
 		console.log("Got error: " + e.message);
@@ -34,25 +50,79 @@ request = http.get(options, function(res){
 function send_ip(ip) {
 	console.log("send_api "+ip);
 
-	var record = "{‘record_type’:'A', ‘zone_id’:88621, ‘name’:'dixie.mirmillo.com', ‘data’:"+ip+"}";
+	//var record = "{‘record_type’:'A', ‘zone_id’:88621, ‘name’:'dixie.mirmillo.com', ‘data’:"+ip+"}";
+	var record = "'record['data']',"+ip;
+
 	console.log(record);
 
-}
-
-// proof of concept that we can talk to slicehost api
-function get_api(ip) {
-	console.log("get_api "+ip);	
-	var options = {
+	// https api options
+	var httpsopt = {
 		host: api,
 		port: 443,
-		path: '/api.xml',
+		//path: '/records.xml/775805',
+		path: '/records.xml/',
+		method: 'GET',
 		headers: {
 		//'Authorization': 'Basic ' + new Buffer(uname + ':' + pword).toString('base64')
 		'Authorization': 'Basic ' + new Buffer(password).toString('base64')
 		}         
 	};
 
-	request = https.get(options, function(res){
+	var req = https.request(httpsopt, function(res) {
+		console.log('STATUS: ' + res.statusCode);
+		console.log('HEADERS: ' + JSON.stringify(res.headers));
+		res.setEncoding('utf8');
+		res.on('data', function (chunk) {
+			console.log('BODY: ' + chunk);
+		});
+	});
+
+	req.on('error', function(e) {
+		console.log('problem with request: ' + e.message);
+	});
+
+	// write data to request body
+	req.write(record);
+	//req.write('data\n');
+	req.end();
+
+}
+
+function get_slices(ip) {
+	console.log("send_api "+ip);
+
+	// https api options
+	var httpsopt = {
+		host: api,
+		port: 443,
+		path: '/slices.xml',
+		headers: {
+		//'Authorization': 'Basic ' + new Buffer(uname + ':' + pword).toString('base64')
+		'Authorization': 'Basic ' + new Buffer(password).toString('base64')
+		}         
+	};
+
+	var req = https.request(httpsopt, function(res) {
+		console.log('STATUS: ' + res.statusCode);
+		console.log('HEADERS: ' + JSON.stringify(res.headers));
+		res.setEncoding('utf8');
+		res.on('data', function (chunk) {
+			console.log('BODY: ' + chunk);
+		});
+	});
+
+	req.on('error', function(e) {
+		console.log('problem with request: ' + e.message);
+	});
+
+	req.end();
+}
+
+// proof of concept that we can talk to slicehost api
+function get_api(ip) {
+	console.log("get_api "+ip);	
+
+	request = https.get(httpsopt, function(res){
 		var body = "";
 		res.on('data', function(data) {
 			body += data;
