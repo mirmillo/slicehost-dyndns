@@ -1,11 +1,8 @@
 var http = require('http');
 var https = require('https');
 var util = require('./util');
-var querystring = require('querystring');
 
 // config stuff
-var domain = "example.com";
-var subdomain = "";
 var password = "";
 var api = "api.slicehost.com";
 
@@ -51,10 +48,7 @@ request = http.get(httpopt, function(res){
 function send_ip(ip) {
 	console.log("send_api "+ip);
 
-	//var record = "{‘record_type’:'A', ‘zone_id’:88621, ‘name’:'dixie.mirmillo.com', ‘data’:"+ip+"}";
 	var record = "record[data]="+ip;
-
-	//var post_data = querystring.stringify({'record[data]' = ip});
 
 	console.log(record);
 
@@ -62,8 +56,7 @@ function send_ip(ip) {
 	var httpsopt = {
 		host: api,
 		port: 443,
-		path: '/records/775805.xml',
-		//path: '/records.xml',
+		path: '/records/775805.xml', // this id is only for dixie.mirmillo.com - would be nice if this figured out what the record id was first
 		method: 'PUT',
 		headers: {
 		//'Authorization': 'Basic ' + new Buffer(uname + ':' + pword).toString('base64')
@@ -88,11 +81,11 @@ function send_ip(ip) {
 
 	// write data to request body
 	req.write(record);
-	//req.write('data\n');
 	req.end();
 
 }
 
+// verify that we can get the slices
 function get_slices(ip) {
 	console.log("send_api "+ip);
 
