@@ -1,1 +1,7 @@
 Using the slicehost API to create a dynDNS client based on https://github.com/pho3nixf1re/Slicehost-Dynamic-DNS/blob/master/update_slicehost_dns.rb
+
+Information on how the Slicecode API works can be found here:
+http://forum.slicehost.com/comments.php?DiscussionID=3601&page=1#Item_0 (for how the data is formatted for activeresource)
+
+Also, invaluable reverse engineering from the PHP-SliceAPI found here:
+http://sourceforge.net/projects/php-sliceapi
