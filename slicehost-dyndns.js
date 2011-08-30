@@ -1,6 +1,7 @@
 var http = require('http');
 var https = require('https');
 var util = require('./util');
+var querystring = require('querystring');
 
 // config stuff
 var domain = "example.com";
@@ -51,7 +52,9 @@ function send_ip(ip) {
 	console.log("send_api "+ip);
 
 	//var record = "{‘record_type’:'A', ‘zone_id’:88621, ‘name’:'dixie.mirmillo.com', ‘data’:"+ip+"}";
-	var record = "'record['data']',"+ip;
+	var record = "record[data]="+ip;
+
+	//var post_data = querystring.stringify({'record[data]' = ip});
 
 	console.log(record);
 
@@ -59,12 +62,14 @@ function send_ip(ip) {
 	var httpsopt = {
 		host: api,
 		port: 443,
-		//path: '/records.xml/775805',
-		path: '/records.xml/',
-		method: 'GET',
+		path: '/records/775805.xml',
+		//path: '/records.xml',
+		method: 'PUT',
 		headers: {
 		//'Authorization': 'Basic ' + new Buffer(uname + ':' + pword).toString('base64')
-		'Authorization': 'Basic ' + new Buffer(password).toString('base64')
+		'Authorization': 'Basic ' + new Buffer(password).toString('base64'),
+		'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Length': record.length
 		}         
 	};
 
