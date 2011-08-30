@@ -8,25 +8,34 @@ var subdomain = "";
 var password = "";
 var api = "api.slicehost.com";
 
-var client = http.createClient(80, 'mirmillo.com');
-var request = client.request('GET', '/ip.php', {'host': 'mirmillo.com'});
-request.end();
+	var options = {
+		host: 'mirmillo.com',
+		port: 80,
+		path: '/ip.php'
+	};
 
-request.on('response', function (response) {
-	response.setEncoding('utf8');
-	response.on('data', function (chunk) {
-		//send_ip(chunk);
-		get_api(chunk);
+	request = http.get(options, function(res){
+		var body = "";
+		res.on('data', function(data) {
+			body += data;
+		});
+		res.on('end', function() {
+			console.log("response "+body);
+			get_api(body);
+		})
+		res.on('error', function(e) {
+			console.log("Got error: " + e.message);
+		});
 	});
-});
+
 
 function send_ip(ip) {
-	console.log(ip);
+	console.log("send_api "+ip);
 
 }
 
 function get_api(ip) {
-	
+	console.log("get_api "+ip);	
 	var options = {
 		host: api,
 		port: 443,
