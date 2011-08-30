@@ -1,15 +1,16 @@
 var http = require('http');
-var fs = require('fs');
 
-	var client = http.createClient(80, 'whatismyip.org');
-	var request = client.request('GET', '/', {'host': 'www.whatismyip.org'});
-	
-	out = fs.createWriteStream('out');
-	request.on('response', function (response) {
-		response.setEncoding('utf8');
-		response.on('data', function (chunk) {
-			out.write(chunk);
-		});
+var client = http.createClient(80, 'mirmillo.com');
+var request = client.request('GET', '/ip.php', {'host': 'mirmillo.com'});
+request.end();
+
+request.on('response', function (response) {
+	response.setEncoding('utf8');
+	response.on('data', function (chunk) {
+		send_ip(chunk);
 	});
-	
-	request.end();
+});
+
+function send_ip(ip) {
+	console.log(ip);
+}
